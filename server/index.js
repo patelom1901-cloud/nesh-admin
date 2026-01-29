@@ -28,8 +28,14 @@ app.get("/", (req, res) => {
     message: "Nesh Admin API is running"
   });
 });
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // routes
+const leadRoutes = require("./routes/leads");
+app.use("/api/leads", leadRoutes);
+
 const adminRoutes = require("./routes/admin");
 app.use("/api/admin", adminRoutes);
 

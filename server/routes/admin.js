@@ -70,3 +70,20 @@ router.get("/dashboard", auth, (req, res) => {
 });
 
 module.exports = router;
+
+const Lead = require("../models/Lead");
+
+// Total leads count
+router.get("/leads/count", auth, async (req, res) => {
+  const count = await Lead.countDocuments();
+  res.json({ totalLeads: count });
+});
+
+// Latest 10 leads
+router.get("/leads/latest", auth, async (req, res) => {
+  const leads = await Lead.find()
+    .sort({ createdAt: -1 })
+    .limit(10);
+
+  res.json(leads);
+});
