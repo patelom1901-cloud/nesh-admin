@@ -87,3 +87,22 @@ router.get("/leads/latest", auth, async (req, res) => {
 
   res.json(leads);
 });
+const Lead = require("../models/Lead");
+
+// GET all leads (latest first)
+router.get("/leads", auth, async (req, res) => {
+  try {
+    const leads = await Lead.find()
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    const total = await Lead.countDocuments();
+
+    res.json({
+      totalLeads: total,
+      latestLeads: leads
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
