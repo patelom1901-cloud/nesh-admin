@@ -2,7 +2,9 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth");
+
 const Admin = require("../models/Admin");
+const Lead = require("../models/Lead");
 
 const router = express.Router();
 
@@ -69,40 +71,24 @@ router.get("/dashboard", auth, (req, res) => {
   });
 });
 
-module.exports = router;
-
-const Lead = require("../models/Lead");
-
-// Total leads count
-router.get("/leads/count", auth, async (req, res) => {
-  const count = await Lead.countDocuments();
-  res.json({ totalLeads: count });
-});
-
-// Latest 10 leads
-router.get("/leads/latest", auth, async (req, res) => {
-  const leads = await Lead.find()
-    .sort({ createdAt: -1 })
-    .limit(10);
-
-  res.json(leads);
-});
-const Lead = require("../models/Lead");
-
-// GET all leads (latest first)
+/**
+ * Leads summary (COUNT + LATEST 10)
+ */
 router.get("/leads", auth, async (req, res) => {
   try {
-    const leads = await Lead.find()
+    const total = await Lead.countDocuments();
+    const latest = await Lead.find()
       .sort({ createdAt: -1 })
       .limit(10);
 
-    const total = await Lead.countDocuments();
-
     res.json({
       totalLeads: total,
-      latestLeads: leads
+      latestLeads: latest
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
+module.exports = router;
