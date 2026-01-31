@@ -9,57 +9,36 @@ const Lead = require("../models/Lead");
 const router = express.Router();
 
 /**
- * TEMP: Create admin (DELETE after one use)
+ * Login
  */
-router.post("/create-admin", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const exists = await Admin.findOne({ email });
-    if (exists) {
-      return res.status(400).json({ message: "Admin already exists" });
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-    const admin = new Admin({
-      email,
-      password: hashedPassword
-    });
+    const token = jwt.sign(
+      { email: admin.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    await admin.save();
+    res.json({ token });
 
-    res.status(201).json({ message: "Admin created" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/**
- * Login
- */
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  const admin = await Admin.findOne({ email });
-  if (!admin) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  const isMatch = await bcrypt.compare(password, admin.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  const token = jwt.sign(
-    { email: admin.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-
-  res.json({ token });
-});
 
 /**
  * Protected dashboard
@@ -71,12 +50,14 @@ router.get("/dashboard", auth, (req, res) => {
   });
 });
 
+
 /**
  * Leads summary (COUNT + LATEST 10)
  */
 router.get("/leads", auth, async (req, res) => {
   try {
     const total = await Lead.countDocuments();
+
     const latest = await Lead.find()
       .sort({ createdAt: -1 })
       .limit(10);
@@ -85,6 +66,7 @@ router.get("/leads", auth, async (req, res) => {
       totalLeads: total,
       latestLeads: latest
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
