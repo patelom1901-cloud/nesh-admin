@@ -15,8 +15,9 @@ router.post("/", async (req, res) => {
       name,
       phone,
       product,
-      page,
-      ip: req.ip
+      page: page || "unknown",
+      ip: req.ip,
+      country: req.headers["x-country"] || "unknown"
     });
 
     res.status(201).json({

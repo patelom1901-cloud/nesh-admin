@@ -2,15 +2,24 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 dotenv.config();
 
 const app = express();
 
+// security FIRST
+app.use(helmet());
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+}));
+
 app.use(cors());
 app.use(express.json());
 
-// ✅ SERVE STATIC FILES
+// serve static admin UI
 app.use(express.static("public"));
 
 // DB connect
@@ -28,9 +37,6 @@ app.get("/", (req, res) => {
     message: "Nesh Admin API is running"
   });
 });
-const path = require("path");
-
-app.use(express.static(path.join(__dirname, "public")));
 
 // routes
 const leadRoutes = require("./routes/leads");
