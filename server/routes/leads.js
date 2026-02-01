@@ -5,7 +5,7 @@ const Lead = require("../models/Lead");
 // PUBLIC: submit lead
 router.post("/", async (req, res) => {
   try {
-    const { name, phone, product, page } = req.body;
+    const { name, phone, product, page, country } = req.body;
 
     if (!name || !phone || !product) {
       return res.status(400).json({ message: "All fields required" });
@@ -15,9 +15,9 @@ router.post("/", async (req, res) => {
       name,
       phone,
       product,
-      page: page || "unknown",
-      ip: req.ip,
-      country: req.headers["x-country"] || "unknown"
+      page,
+      country: country || "Unknown",
+      ip: req.ip
     });
 
     res.status(201).json({
