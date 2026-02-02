@@ -1,28 +1,28 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const dotenv = require("dotenv");
+require("dotenv").config();
+
 const Admin = require("./models/Admin");
 
-dotenv.config();
-
-async function seed() {
+async function seedAdmin() {
   await mongoose.connect(process.env.MONGO_URI);
 
-  const exists = await Admin.findOne({ email: "admin@nesh.com" });
-  if (exists) {
-    console.log("Admin already exists");
-    process.exit();
-  }
+  const email = "admin@nesh.com";
+  const password = "admin123"; // 👈 SET A PASSWORD YOU WILL REMEMBER
 
-  const hashedPassword = await bcrypt.hash("admin123", 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  await Admin.create({
-    email: "admin@nesh.com",
-    password: hashedPassword
-  });
+  await Admin.findOneAndUpdate(
+    { email },
+    { email, password: hashedPassword },
+    { upsert: true, new: true }
+  );
 
-  console.log("Admin created");
+  console.log("✅ Admin reset complete");
+  console.log("Email:", email);
+  console.log("Password:", password);
+
   process.exit();
 }
 
-seed();
+seedAdmin();
