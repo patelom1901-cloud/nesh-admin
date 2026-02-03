@@ -9,7 +9,37 @@ const Lead = require("../models/Lead");
 const router = express.Router();
 
 /**
- * Login
+ * CREATE ADMIN (run ONCE)
+ */
+router.post("/create-admin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const exists = await Admin.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = new Admin({
+      email,
+      password: hashedPassword,
+      role: "admin"
+    });
+
+    await admin.save();
+
+    res.json({ message: "Admin created successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
+ * LOGIN
  */
 router.post("/login", async (req, res) => {
   try {
@@ -26,7 +56,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: admin.email },
+      { id: admin._id, email: admin.email, role: admin.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -39,9 +69,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 /**
- * Protected dashboard
+ * PROTECTED DASHBOARD
  */
 router.get("/dashboard", auth, (req, res) => {
   res.json({
@@ -50,9 +79,8 @@ router.get("/dashboard", auth, (req, res) => {
   });
 });
 
-
 /**
- * Leads summary (COUNT + LATEST 10)
+ * LEADS SUMMARY (COUNT + LATEST 10)
  */
 router.get("/leads", auth, async (req, res) => {
   try {
@@ -74,30 +102,3 @@ router.get("/leads", auth, async (req, res) => {
 });
 
 module.exports = router;
-
-
-router.post("/create-admin", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const exists = await Admin.findOne({ email });
-    if (exists) {
-      return res.status(400).json({ message: "Admin already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const admin = new Admin({
-      email,
-      password: hashedPassword
-    });
-
-    await admin.save();
-
-    res.json({ message: "Admin created successfully" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
