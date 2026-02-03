@@ -74,3 +74,30 @@ router.get("/leads", auth, async (req, res) => {
 });
 
 module.exports = router;
+
+
+router.post("/create-admin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const exists = await Admin.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = new Admin({
+      email,
+      password: hashedPassword
+    });
+
+    await admin.save();
+
+    res.json({ message: "Admin created successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
