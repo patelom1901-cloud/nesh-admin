@@ -1,46 +1,30 @@
-async function login() {
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch("/api/admin/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/admin/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      }
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!data.token) {
-    document.getElementById("error").innerText = "Login failed";
-    return;
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "dashboard.html";
+    } else {
+      document.getElementById("error").innerText =
+        data.message || "Login failed";
+    }
+  } catch (error) {
+    console.error(error);
+    document.getElementById("error").innerText = "Connection failed. Check console.";
   }
-
-  localStorage.setItem("token", data.token);
-  window.location.href = "/dashboard.html";
-}
-
-async function loadDashboard() {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/login.html";
-    return;
-  }
-
-  const res = await fetch("/api/admin/dashboard", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  if (res.status !== 200) {
-    localStorage.removeItem("token");
-    window.location.href = "/login.html";
-    return;
-  }
-
-  const data = await res.json();
-  document.getElementById("data").innerText =
-    JSON.stringify(data, null, 2);
-}
-
-if (window.location.pathname.includes("dashboard")) {
-  loadDashboard();
-}
+});

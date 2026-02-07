@@ -1,37 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard</title>
+  <title>Dashboard</title>
 </head>
 <body>
-  <h1 id="welcome">Loading...</h1>
 
-  <script>
-    const token = localStorage.getItem("token");
+<h2>Dashboard</h2>
+<button id="logoutBtn">Logout</button>
+<pre id="output"></pre>
 
-    if (!token) {
-      window.location.href = "/login.html";
-    }
+<script src="js/config.js"></script>
+<script src="js/dashboard.js"></script>
 
-    fetch("/api/admin/dashboard", {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    })
-    .then(res => {
-      if (res.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login.html";
-      }
-      return res.json();
-    })
-    .then(data => {
-      document.getElementById("welcome").innerText =
-        "Welcome, " + data.admin.email;
-    })
-    .catch(() => {
-      window.location.href = "/login.html";
-    });
-  </script>
 </body>
 </html>
