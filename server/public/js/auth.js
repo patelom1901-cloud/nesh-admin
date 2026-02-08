@@ -1,3 +1,7 @@
+if (localStorage.getItem("token")) {
+  window.location.href = "dashboard.html";
+}
+
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 

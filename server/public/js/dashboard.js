@@ -24,9 +24,12 @@ fetch(`${API_BASE}/api/admin/dashboard`, {
     output.innerText = JSON.stringify(data, null, 2);
   }
 })
-.catch(() => {
-  // If the token is invalid or server is down
-  console.error("Failed to fetch dashboard data");
+.catch((error) => {
+  console.error("Dashboard fetch error:", error);
+  const output = document.getElementById("output");
+  if (output) {
+    output.innerText = "Error loading data. Ensure backend is running.";
+  }
 });
 
 const logoutBtn = document.getElementById("logoutBtn");

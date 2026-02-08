@@ -5,28 +5,32 @@ const Lead = require("../models/Lead");
 // PUBLIC: submit lead
 router.post("/", async (req, res) => {
   try {
-    const { name, phone, product, page, country } = req.body;
+    const { name, phone, email, message, page } = req.body;
 
-    if (!name || !phone || !product) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!name || !phone || !page) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Name, phone, and page are required" 
+      });
     }
 
-    const lead = await Lead.create({
+    const newLead = new Lead({
       name,
       phone,
-      product,
-      page,
-      country: country || "Unknown",
-      ip: req.ip
+      email: email || "",
+      message: message || "",
+      page
     });
 
+    await newLead.save();
+
     res.status(201).json({
-      message: "Lead submitted successfully",
-      leadId: lead._id
+      success: true,
+      message: "Lead saved"
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 

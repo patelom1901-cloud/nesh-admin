@@ -80,20 +80,15 @@ router.get("/dashboard", auth, (req, res) => {
 });
 
 /**
- * LEADS SUMMARY (COUNT + LATEST 10)
+ * GET LATEST LEADS
  */
 router.get("/leads", auth, async (req, res) => {
   try {
-    const total = await Lead.countDocuments();
-
-    const latest = await Lead.find()
+    const leads = await Lead.find()
       .sort({ createdAt: -1 })
-      .limit(10);
+      .limit(20);
 
-    res.json({
-      totalLeads: total,
-      latestLeads: latest
-    });
+    res.json(leads);
 
   } catch (err) {
     console.error(err);

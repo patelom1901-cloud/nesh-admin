@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const LeadSchema = new mongoose.Schema({
   name: {
@@ -11,20 +11,20 @@ const LeadSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  product: {
+  email: {
     type: String,
-    required: true
+    default: "",
+    trim: true
+  },
+  message: {
+    type: String,
+    default: "",
+    trim: true
   },
   page: {
     type: String,
-    default: ""
-  },
-  ip: {
-    type: String
-  },
-  country: {
-    type: String,
-    default: "Unknown"
+    required: true,
+    trim: true
   },
   createdAt: {
     type: Date,
@@ -32,4 +32,4 @@ const LeadSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model("Lead", LeadSchema);
+module.exports = mongoose.model('Lead', LeadSchema);
