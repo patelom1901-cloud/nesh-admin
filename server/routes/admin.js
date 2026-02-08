@@ -86,7 +86,8 @@ router.get("/leads", auth, async (req, res) => {
   try {
     const leads = await Lead.find()
       .sort({ createdAt: -1 })
-      .limit(20);
+      .limit(20)
+      .select('name phone message page createdAt -_id');
 
     res.json(leads);
 
