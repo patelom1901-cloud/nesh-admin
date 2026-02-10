@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      flex-direction: column;
+    }
+    .shimmer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #4d4d4d 0%, #999 50%, #4d4d4d 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer {
+      to { background-position: 200% center; }
+    }
+    .countdown {
+      margin-top: 1rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="shimmer">We’re upgrading Nesh Industries. Back shortly.</div>
+  <div class="countdown">--:--:--</div>
+</body>
+</html>

@@ -4,6 +4,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const visitorTracker = require("./middleware/visitorTracker");
+const maintenance = require("./middleware/maintenance");
 
 dotenv.config();
 
@@ -18,6 +20,12 @@ app.use(rateLimit({
 
 app.use(cors());
 app.use(express.json());
+
+// MAINTENANCE MODE (Must be before static files and visitor tracker)
+app.use(maintenance);
+
+// REGISTER VISITOR TRACKER
+app.use(visitorTracker);
 
 // serve static admin UI
 app.use(express.static("public"));
