@@ -29,6 +29,11 @@ const LeadSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  ip: String,
+  visitorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Visitor"
   }
 });
 

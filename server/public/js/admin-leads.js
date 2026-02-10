@@ -47,16 +47,30 @@ async function fetchLeads(token) {
       return;
     }
 
-    let html = "<ul>";
+    // Render Table
+    let html = `<table border="1" cellpadding="10" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Name / Phone</th>
+          <th>Page / Date</th>
+          <th>Location</th>
+          <th>Stats</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
     leads.forEach(lead => {
       const date = new Date(lead.createdAt).toLocaleString();
-      html += `<li>
-        <strong>${lead.name}</strong> (${lead.phone})<br>
-        Page: ${lead.page} | Date: ${date}<br>
-        Message: ${lead.message || "N/A"}
-      </li><br>`;
+      html += `<tr>
+        <td><strong>${lead.name}</strong><br>${lead.phone}</td>
+        <td>${lead.page}<br><small>${date}</small></td>
+        <td>${lead.location}</td>
+        <td>Visits: ${lead.visits}<br>Pages: ${lead.pagesViewed}</td>
+        <td>${lead.message || ""}</td>
+      </tr>`;
     });
-    html += "</ul>";
+    html += "</tbody></table>";
     container.innerHTML = html;
 
   } catch (err) {
